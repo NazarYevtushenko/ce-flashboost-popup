@@ -1,249 +1,231 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>OlyBet SuperBoost Executive Editor</title>
+    <title>OlyBoost Executive Editor PRO</title>
     <style>
         :root { --primary: #e32d37; --bg: #f4f7f6; --dark: #1e1e1e; --accent: #00ff7f; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; color: #333; overflow: hidden; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
         /* Sidebar */
-        .sidebar { width: 400px; background: white; padding: 25px; box-shadow: 2px 0 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+        .sidebar { width: 420px; background: white; padding: 20px; box-shadow: 2px 0 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         .sidebar-content { flex-grow: 1; overflow-y: auto; padding-right: 10px; }
-        h2 { margin-top: 0; font-size: 20px; color: var(--primary); border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
         
-        .import-box { background: #fdf2f2; border: 1px solid #fee2e2; border-radius: 8px; padding: 12px; margin-bottom: 20px; }
-        .import-box label { color: var(--primary); font-weight: 800; }
+        h2 { margin: 0 0 15px 0; font-size: 18px; color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 8px; }
         
-        .group { margin-bottom: 12px; }
-        label { display: block; font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 4px; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 13px; outline: none; }
-        select { background: #fff4f4; border-color: var(--primary); font-weight: bold; cursor: pointer; }
-        textarea#intro { height: 60px; resize: vertical; }
-
+        .smart-box { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 12px; margin-bottom: 15px; }
+        .import-box { background: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; padding: 12px; margin-top: 20px; }
+        
+        .group { margin-bottom: 10px; }
+        label { display: block; font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 3px; }
+        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 13px; outline: none; }
+        input:focus, textarea:focus { border-color: var(--primary); }
+        
         /* Workspace */
-        .workspace { flex-grow: 1; padding: 40px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; align-items: center; }
-        .preview-box { background: #333; border-radius: 12px; padding: 40px; display: flex; justify-content: center; align-items: center; width: 100%; max-width: 800px; min-height: 400px; box-shadow: inset 0 0 50px rgba(0,0,0,0.2); }
-        .code-box { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); width: 100%; max-width: 800px; }
-        textarea#output { height: 100px; font-family: 'Courier New', monospace; font-size: 11px; background: #fafafa; }
+        .workspace { flex-grow: 1; padding: 30px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; align-items: center; }
+        .preview-box { background: #333; border-radius: 12px; padding: 40px; display: flex; justify-content: center; align-items: center; width: 100%; min-height: 400px; box-shadow: inset 0 0 50px rgba(0,0,0,0.3); }
         
-        .copy-btn { background: var(--dark); color: white; border: none; padding: 15px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 10px; }
-        .copy-btn:hover { background: #000; box-shadow: 0 4px 12px rgba(0,255,127,0.2); }
-        .import-btn { background: var(--dark); color: white; border: none; padding: 8px; border-radius: 4px; font-size: 11px; cursor: pointer; margin-top: 5px; width: 100%; }
-
-        .team-mention { margin-top: 20px; padding: 15px; background: #fff5f5; border-radius: 10px; border: 1px dashed var(--primary); font-size: 12px; text-align: center; }
+        .copy-btn { background: var(--dark); color: white; border: none; padding: 14px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s; }
+        .copy-btn:hover { background: #000; box-shadow: 0 4px 12px rgba(0,255,127,0.3); }
+        
+        .action-btn { background: #0369a1; color: white; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 5px; }
+        
+        .team-mention { margin-top: 15px; padding: 10px; background: #fff5f5; border-radius: 8px; border: 1px dashed var(--primary); font-size: 11px; text-align: center; }
         .heart { color: var(--primary); animation: beat .3s infinite alternate; display: inline-block; }
         @keyframes beat { to { transform: scale(1.1); } }
-        .hint { font-size: 10px; color: #999; margin-top: 2px; }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
     <div class="sidebar-content">
-        <h2>SuperBoost Editor 🚀</h2>
-        
-        <div class="import-box">
-            <label>IMPORT OLD CODE</label>
-            <textarea id="import-html" style="height: 50px; margin-top: 5px;" placeholder="Paste code here..."></textarea>
-            <button class="import-btn" onclick="importHTML()">PARSE CODE ↑</button>
+        <h2>OlyBoost Editor 🚀</h2>
+
+        <div class="smart-box">
+            <label>⚡ SMART PASTE (RU/EN/EE/LV)</label>
+            <textarea id="smart-input" style="height: 60px; margin-top: 5px;" placeholder="Вставьте текст целиком (с кавычками и цифрами)..."></textarea>
+            <button class="action-btn" onclick="processSmartPaste()">РАЗОБРАТЬ И ОПРЕДЕЛИТЬ ЯЗЫК</button>
         </div>
 
         <div class="group">
-            <label>1. Language Template</label>
-            <select id="lang" onchange="generate()">
+            <label>Язык шаблона</label>
+            <select id="lang" onchange="updateFieldsFromLang(); generate();">
                 <option value="EN">English (EN)</option>
-                <option value="ET">Estonian (ET)</option>
-                <option value="RU">Russian (RU)</option>
+                <option value="ET">Estonian (EE)</option>
+                <option value="RU" selected>Russian (RU)</option>
                 <option value="LV">Latvian (LV)</option>
             </select>
         </div>
 
-        <div class="group"><label>Image URL</label><input id="img" type="text" oninput="generate()"></div>
-        <div class="group">
-            <label>Intro Text (Ctrl+B = Bold)</label>
-            <textarea id="intro" oninput="generate()"></textarea>
-            <div class="hint">Use <b>Ctrl+B</b> to make selected text bold</div>
-        </div>
-        <div class="group"><label>Line Text</label><input id="line" type="text" oninput="generate()"></div>
-        <div class="group"><label>Old Odds</label><input id="old" type="text" oninput="generate()"></div>
-        <div class="group"><label>New Odds</label><input id="new" type="text" oninput="generate()"></div>
-        <div class="group"><label>Button Link</label><input id="link" type="text" oninput="generate()"></div>
+        <div class="group"><label>Картинка (URL)</label><input id="img" type="text" placeholder="https://..." oninput="generate()"></div>
+        <div class="group"><label>Интро (Ctrl+B = Bold)</label><textarea id="intro" oninput="updateCurrentLangData(); generate()"></textarea></div>
+        <div class="group"><label>Линия (Матч)</label><input id="line" type="text" oninput="updateCurrentLangData(); generate()"></div>
+        <div class="group"><label>Старый коэф.</label><input id="old" type="text" oninput="generate()"></div>
+        <div class="group"><label>Новый коэф.</label><input id="new" type="text" oninput="generate()"></div>
+        <div class="group"><label>Ссылка</label><input id="link" type="text" oninput="generate()"></div>
 
-        <button class="copy-btn" onclick="copyCode()">COPY HTML CODE</button>
+        <button class="copy-btn" onclick="copyCode()">СКОПИРОВАТЬ HTML КОД</button>
+
+        <div class="import-box">
+            <label>📁 Импорт из готового HTML</label>
+            <textarea id="import-html" style="height: 50px; margin-top: 5px;" placeholder="Вставьте HTML код баннера..."></textarea>
+            <button class="action-btn" style="background: #4b5563;" onclick="importHTML()">ВОССТАНОВИТЬ ДАННЫЕ</button>
+        </div>
 
         <div class="team-mention">
-            Made with <span class="heart">❤️</span> for <br>
-            <b>OlyBet Executive Team</b><br>
+            Made with <span class="heart">❤️</span> for <b>OlyBet Executive Team</b><br>
             <small>(Вероника, Маша, Лера, Ангелина, Кития)</small>
         </div>
     </div>
 </div>
 
 <div class="workspace">
-    <div class="preview-box" id="preview"></div>
-    <div class="code-box">
-        <label>Generated Source</label>
-        <textarea id="output" readonly></textarea>
+    <div id="preview" class="preview-box"></div>
+    <div style="width:100%; max-width:800px; background:white; padding:15px; border-radius:10px;">
+        <label>Результат (Код для вставки):</label>
+        <textarea id="output" readonly style="height: 60px; font-family: monospace; font-size: 11px;"></textarea>
     </div>
 </div>
 
 <script>
-const templates = {
-    EN: `<div style="text-align:left;display:inline-block;font-family:Montserrat,sans-serif;background-color:#252525;border-radius:10px;max-width:400px;box-shadow:0 4px 15px rgba(0,0,0,.5);position:relative;font-size:14px;padding:0;overflow:hidden" class=popup><div style=background-color:#252525;text-align:center><img alt="Boost" src="[IMG LINK]" style=width:100%;height:auto;display:block><div style="padding:15px 10px"><h2 style="margin:0;color:#fff;font-size:22px;line-height:1.1;font-weight:900;text-transform:uppercase;text-shadow:1px 1px 2px rgba(0,0,0,.2)"> FLASH SUPERBOOST</h2></div></div><div style="padding:25px 20px;color:#fff;text-align:center"><p style="margin:0 0 20px 0;font-size:14px;line-height:1.5;color:#ccc">[INTRO TEXT]<br>[LINE]<div style="background-color:#252525;border:1px solid #333;border-radius:8px;padding:15px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:15px"><div style=text-align:center><div style=font-size:11px;color:#888;font-weight:700;margin-bottom:2px>WAS</div><div style=font-size:20px;color:#888;text-decoration:line-through;font-weight:600>[OLD ODDS]</div></div><div style=font-size:24px;color:#f73535>➔</div><div style=text-align:center><div style=font-size:11px;color:#f73535;font-weight:700;margin-bottom:2px>NOW</div><div style=font-size:36px;color:#f73535;font-weight:900;line-height:1>[NEW ODDS]</div></div></div><p style="margin:0 0 20px 0;font-size:13px;line-height:1.4;color:#999">Max bet €10. Find it in the OlyBoost section!<p style="margin:0 0 20px 0;font-size:14px;line-height:1.5;color:#ccc"><a href="[LINK]" style=text-decoration:none;display:block target=_blank><span style="display:block;width:100%;background-color:#00ff7f;color:#000;padding:14px 0;font-weight:800;font-size:18px;border-radius:4px;text-transform:uppercase;box-shadow:0 4px 0 #0c6">GO FOR IT</span></a></div></div><style>#modal-title{display:none!important}#modal-background{background:0 0!important;text-align:center}</style>`,
-    ET: `<div style="text-align:left;display:inline-block;font-family:Montserrat,sans-serif;background-color:#252525;border-radius:10px;max-width:400px;box-shadow:0 4px 15px rgba(0,0,0,.5);position:relative;font-size:14px;padding:0;overflow:hidden" class=popup><div style=background-color:#252525;text-align:center><img alt="Boost" src="[IMG LINK]" style=width:100%;height:auto;display:block><div style="padding:15px 10px"><h2 style="margin:0;color:#fff;font-size:22px;line-height:1.1;font-weight:900;text-transform:uppercase;text-shadow:1px 1px 2px rgba(0,0,0,.2)"> FLASH SUPERBOOST</h2></div></div><div style="padding:25px 20px;color:#fff;text-align:center"><p style="margin:0 0 20px 0;font-size:14px;line-height:1.5;color:#ccc">[INTRO TEXT]<br>[LINE]<div style="background-color:#252525;border:1px solid #333;border-radius:8px;padding:15px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:15px"><div style=text-align:center><div style=font-size:11px;color:#888;font-weight:700;margin-bottom:2px>ENNE</div><div style=font-size:20px;color:#888;text-decoration:line-through;font-weight:600>[OLD ODDS]</div></div><div style=font-size:24px;color:#f73535>➔</div><div style=text-align:center><div style=font-size:11px;color:#f73535;font-weight:700;margin-bottom:2px>NÜÜD</div><div style=font-size:36px;color:#f73535;font-weight:900;line-height:1>[NEW ODDS]</div></div></div><p style="margin:0 0 20px 0;font-size:13px;line-height:1.4;color:#999">Maksimaalne panus 10 €. Leia see OlyBoosti sektsioonist!<p style="margin:0 0 20px 0;font-size:14px;line-height:1.5;color:#ccc"><a href="[LINK]" style=text-decoration:none;display:block target=_blank><span style="display:block;width:100%;background-color:#00ff7f;color:#000;padding:14px 0;font-weight:800;font-size:18px;border-radius:4px;text-transform:uppercase;box-shadow:0 4px 0 #0c6">HAKKA PIHTA</span></a></div></div><style>#modal-title{display:none!important}#modal-background{background:0 0!important;text-align:center}</style>`,
-    RU: `<div style="text-align:left;display:inline-block;font-family:Montserrat,sans-serif;background-color:#252525;border-radius:10px;max-width:400px;box-shadow:0 4px 15px rgba(0,0,0,.5);position:relative;font-size:14px;padding:0;overflow:hidden" class=popup><div style=background-color:#252525;text-align:center><img alt="Boost" src="[IMG LINK]" style=width:100%;height:auto;display:block><div style="padding:15px 10px"><h2 style="margin:0;color:#fff;font-size:22px;line-height:1.1;font-weight:900;text-transform:uppercase;text-shadow:1px 1px 2px rgba(0,0,0,.2)"> FLASH SUPERBOOST</h2></div></div><div style="padding:25px 20px;color:#fff;text-align:center"><p style="margin:0 0 20px 0;font-size:14px;line-height:1.5;color:#ccc">[INTRO TEXT]<br>[LINE]<div style="background-color:#252525;border:1px solid #333;border-radius:8px;padding:15px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:15px"><div style=text-align:center><div style=font-size:11px;color:#888;font-weight:700;margin-bottom:2px>БЫЛ</div><div style=font-size:20px;color:#888;text-decoration:line-through;font-weight:600>[OLD ODDS]</div></div><div style=font-size:24px;color:#f73535>➔</div><div style=text-align:center><div style=font-size:11px;color:#f73535;font-weight:700;margin-bottom:2px>ТЕПЕРЬ</div><div style=font-size:36px;color:#f73535;font-weight:900;line-height:1>[NEW ODDS]</div></div></div><p style="margin:0 0 20px 0;font-size:13px;line-height:1.4;color:#999">Макс. ставка 10 €. Найдите его в разделе OlyBoost!<p style="margin:0 0 20px 0;font-size:14px;line-height:1.5;color:#ccc"><a href="[LINK]" style=text-decoration:none;display:block target=_blank><span style="display:block;width:100%;background-color:#00ff7f;color:#000;padding:14px 0;font-weight:800;font-size:18px;border-radius:4px;text-transform:uppercase;box-shadow:0 4px 0 #0c6">ВПЕРЁД</span></a></div></div><style>#modal-title{display:none!important}#modal-background{background:0 0!important;text-align:center}</style>`,
-    LV: `<div style="text-align:left;display:inline-block;font-family:Montserrat,sans-serif;background-color:#252525;border-radius:10px;max-width:400px;box-shadow:0 4px 15px rgba(0,0,0,.5);position:relative;font-size:14px;padding:0;overflow:hidden" class=popup><div style=background-color:#252525;text-align:center><img alt="Boost" src="[IMG LINK]" style=width:100%;height:auto;display:block><div style="padding:15px 10px"><h2 style="margin:0;color:#fff;font-size:22px;line-height:1.1;font-weight:900;text-transform:uppercase;text-shadow:1px 1px 2px rgba(0,0,0,.2)"> FLASH SUPERBOOST</h2></div></div><div style="padding:25px 20px;color:#fff;text-align:center"><p style="margin:0 0 20px 0;font-size:14px;line-height:1.5;color:#ccc">[INTRO TEXT]<br>[LINE]<div style="background-color:#252525;border:1px solid #333;border-radius:8px;padding:15px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:15px"><div style=text-align:center><div style=font-size:11px;color:#888;font-weight:700;margin-bottom:2px>BIJA</div><div style=font-size:20px;color:#888;text-decoration:line-through;font-weight:600>[OLD ODDS]</div></div><div style=font-size:24px;color:#f73535>➔</div><div style=text-align:center><div style=font-size:11px;color:#f73535;font-weight:700;margin-bottom:2px>TAGAD</div><div style=font-size:36px;color:#f73535;font-weight:900;line-height:1>[NEW ODDS]</div></div></div><p style="margin:0 0 20px 0;font-size:13px;line-height:1.4;color:#999">Maks. likme – 10 €. Atrodi piedāvājumu OlyBoost sadaļā!<p style="margin:0 0 20px 0;font-size:14px;line-height:1.5;color:#ccc"><a href="[LINK]" style=text-decoration:none;display:block target=_blank><span style="display:block;width:100%;background-color:#00ff7f;color:#000;padding:14px 0;font-weight:800;font-size:18px;border-radius:4px;text-transform:uppercase;box-shadow:0 4px 0 #0c6">UZ PRIEKŠU</span></a></div></div><style>#modal-title{display:none!important}#modal-background{background:0 0!important;text-align:center}</style>`
-};
+    const baseTemplate = `<div style="text-align:left;display:inline-block;font-family:Montserrat,sans-serif;background-color:#252525;border-radius:10px;max-width:400px;box-shadow:0 4px 15px rgba(0,0,0,.5);position:relative;font-size:14px;padding:0;overflow:hidden" class=popup><div style=background-color:#252525;text-align:center><img src="[IMG LINK]" style=width:100%;height:auto;display:block><div style="padding:15px 10px"><h2 style="margin:0;color:#fff;font-size:22px;line-height:1.1;font-weight:900;text-transform:uppercase;text-shadow:1px 1px 2px rgba(0,0,0,.2)"> FLASH SUPERBOOST</h2></div></div><div style="padding:25px 20px;color:#fff;text-align:center"><p style="margin:0 0 20px 0;font-size:14px;line-height:1.5;color:#ccc">[INTRO TEXT]<br>[LINE]<div style="background-color:#252525;border:1px solid #333;border-radius:8px;padding:15px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:15px"><div style=text-align:center><div style=font-size:11px;color:#888;font-weight:700;margin-bottom:2px>[WAS_LABEL]</div><div style=font-size:20px;color:#888;text-decoration:line-through;font-weight:600>[OLD ODDS]</div></div><div style=font-size:24px;color:#f73535>➔</div><div style=text-align:center><div style=font-size:11px;color:#f73535;font-weight:700;margin-bottom:2px>[NOW_LABEL]</div><div style=font-size:36px;color:#f73535;font-weight:900;line-height:1>[NEW ODDS]</div></div></div><p style="margin:0 0 20px 0;font-size:13px;line-height:1.4;color:#999">[FOOTER_TEXT]<p style="margin:0 0 20px 0;font-size:14px;line-height:1.5;color:#ccc"><a href="[LINK]" target=_blank style=text-decoration:none;display:block><span style="display:block;width:100%;background-color:#00ff7f;color:#000;padding:14px 0;font-weight:800;font-size:18px;border-radius:4px;text-transform:uppercase;box-shadow:0 4px 0 #0c6">[CTA_TEXT]</span></a></div></div><style>#modal-title{display:none!important}#modal-background{background:0 0!important;text-align:center}</style>`;
 
-const fields = ['lang', 'img', 'intro', 'line', 'old', 'new', 'link'];
-let historyStack = [];
-let redoStack = [];
-let isProcessing = false;
-
-// --- UNDO / REDO LOGIC ---
-function getCurrentState() {
-    const state = {};
-    fields.forEach(id => state[id] = document.getElementById(id).value);
-    return JSON.stringify(state);
-}
-
-function saveState() {
-    if (isProcessing) return;
-    const currentState = getCurrentState();
-    const lastState = historyStack.length > 0 ? JSON.stringify(historyStack[historyStack.length - 1]) : null;
-    if (currentState !== lastState) {
-        historyStack.push(JSON.parse(currentState));
-        redoStack = [];
-        if (historyStack.length > 50) historyStack.shift();
-    }
-}
-
-function undo() {
-    if (historyStack.length > 1) {
-        redoStack.push(historyStack.pop());
-        applyState(historyStack[historyStack.length - 1]);
-    }
-}
-
-function redo() {
-    if (redoStack.length > 0) {
-        const state = redoStack.pop();
-        historyStack.push(state);
-        applyState(state);
-    }
-}
-
-function applyState(state) {
-    if (!state) return;
-    isProcessing = true;
-    fields.forEach(id => document.getElementById(id).value = state[id]);
-    generate(true);
-    isProcessing = false;
-}
-
-// --- IMPORT LOGIC ---
-function importHTML() {
-    const raw = document.getElementById('import-html').value;
-    if (!raw) return alert("Paste code first!");
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(raw, 'text/html');
-    try {
-        isProcessing = true;
-        document.getElementById('img').value = doc.querySelector('img')?.getAttribute('src') || "";
-        
-        // Find WAS/NOW labels to detect language
-        const wasLabel = doc.body.innerText;
-        if (wasLabel.includes("БЫЛ")) document.getElementById('lang').value = "RU";
-        else if (wasLabel.includes("ENNE")) document.getElementById('lang').value = "ET";
-        else if (wasLabel.includes("BIJA")) document.getElementById('lang').value = "LV";
-        else document.getElementById('lang').value = "EN";
-
-        let introHtml = doc.querySelector('p[style*="font-size:14px"]')?.innerHTML || "";
-        // Extract Intro Text (before <br>)
-        document.getElementById('intro').value = introHtml.split('<br>')[0].replace(/<[^>]*>/g, '').trim();
-        // Extract Line Text (after <br>)
-        document.getElementById('line').value = introHtml.split('<br>')[1]?.replace(/<[^>]*>/g, '').trim() || "";
-        
-        // Odds - based on styles
-        const odds = doc.querySelectorAll('div[style*="font-weight:600"], div[style*="font-weight:900"]');
-        document.getElementById('old').value = odds[0]?.innerText || "";
-        document.getElementById('new').value = odds[1]?.innerText || "";
-        
-        document.getElementById('link').value = doc.querySelector('a')?.getAttribute('href') || "";
-        
-        isProcessing = false;
-        saveState();
-        generate();
-        alert("Import successful!");
-    } catch (e) {
-        isProcessing = false;
-        alert("Parsing error. Check format.");
-    }
-}
-
-// --- CORE GENERATION ---
-function generate(skipHistory = false) {
-    const lang = document.getElementById('lang').value;
-    let html = templates[lang];
-
-    const vals = {
-        "[IMG LINK]": document.getElementById('img').value || 'https://via.placeholder.com/400x225/e32d37/FFFFFF?text=SuperBoost',
-        "[INTRO TEXT]": document.getElementById('intro').value.replace(/\n/g, '<br>') || 'EVENT NAME',
-        "[LINE]": document.getElementById('line').value || 'SUBTITLE LINE',
-        "[OLD ODDS]": document.getElementById('old').value || '0.00',
-        "[NEW ODDS]": document.getElementById('new').value || '0.00',
-        "[LINK]": document.getElementById('link').value || '#'
+    const langConfigs = {
+        EN: { was: "WAS", now: "NOW", footer: "Max bet €10. Find it in the OlyBoost section!", cta: "GO FOR IT" },
+        ET: { was: "ENNE", now: "NÜÜD", footer: "Maksimaalne panus 10 €. Leia see OlyBoosti sektsioonist!", cta: "HAKKA PIHTA" },
+        RU: { was: "БЫЛ", now: "СЕЙЧАС", footer: "Макс. ставка 10 €. Найдите его в разделе OlyBoost!", cta: "ВПЕРЁД" },
+        LV: { was: "BIJA", now: "TAGAD", footer: "Maks. likme – 10 €. Atrodi piedāvājumu OlyBoost sadaļā!", cta: "UZ PRIEKŠU" }
     };
 
-    for (const [key, value] of Object.entries(vals)) {
-        html = html.replaceAll(key, value);
-    }
+    let langData = { EN: { i: "", l: "" }, ET: { i: "", l: "" }, RU: { i: "", l: "" }, LV: { i: "", l: "" } };
+    let historyStack = [];
+    let isSilent = false;
 
-    document.getElementById('output').value = html;
-    document.getElementById('preview').innerHTML = html;
+    function processSmartPaste() {
+        const input = document.getElementById('smart-input').value;
+        if (!input) return;
 
-    if (!isProcessing && !skipHistory) {
-        clearTimeout(window.saveTimeout);
-        window.saveTimeout = setTimeout(saveState, 500);
-    }
-}
+        // Коэффициенты
+        const oddsRegex = /(\d+[.,]\d+).*?(\d+[.,]\d+)/;
+        const oddsMatch = input.match(oddsRegex);
+        if (oddsMatch) {
+            document.getElementById('old').value = oddsMatch[1].replace(',', '.');
+            document.getElementById('new').value = oddsMatch[2].replace(',', '.');
+        }
 
-// --- HOTKEYS ---
-window.addEventListener('keydown', function(e) {
-    const isCmdOrCtrl = e.ctrlKey || e.metaKey;
-    if (isCmdOrCtrl && e.code === 'KeyZ' && !e.shiftKey) {
-        e.preventDefault();
-        undo();
-    }
-    if (isCmdOrCtrl && (e.code === 'KeyY' || (e.code === 'KeyZ' && e.shiftKey))) {
-        e.preventDefault();
-        redo();
-    }
-    if (isCmdOrCtrl && e.code === 'KeyB' && document.activeElement.id === 'intro') {
-        e.preventDefault();
-        const el = document.getElementById('intro');
-        const s = el.selectionStart, end = el.selectionEnd;
-        const txt = el.value;
-        el.value = txt.substring(0, s) + '<strong>' + txt.substring(s, end) + '</strong>' + txt.substring(end);
-        el.focus();
-        el.selectionStart = s + 8; el.selectionEnd = end + 8;
-        saveState();
+        // Название матча (кавычки " " или « »)
+        const lineRegex = /["«]([^"»]+)["»]/;
+        const lineMatch = input.match(lineRegex);
+        if (lineMatch) document.getElementById('line').value = lineMatch[1];
+
+        // Интро
+        if (lineMatch) {
+            let intro = input.split(lineMatch[0])[0].replace(/FLASH SUPERBOOST/gi, '').trim();
+            document.getElementById('intro').value = intro;
+        }
+
+        // Авто-определение языка
+        if (input.includes("БЫЛ") || input.includes("Насладитесь") || input.includes("СЕЙЧАС")) document.getElementById('lang').value = "RU";
+        else if (input.includes("ENNE") || input.includes("Naudi")) document.getElementById('lang').value = "ET";
+        else if (input.includes("BIJA")) document.getElementById('lang').value = "LV";
+        else document.getElementById('lang').value = "EN";
+
+        updateCurrentLangData();
         generate();
     }
-});
 
-function copyCode() {
-    const out = document.getElementById("output");
-    out.select();
-    document.execCommand("copy");
-    alert("Copied!");
-}
+    function importHTML() {
+        const raw = document.getElementById('import-html').value;
+        if (!raw) return;
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(raw, 'text/html');
+        try {
+            isSilent = true;
+            document.getElementById('img').value = doc.querySelector('img')?.getAttribute('src') || "";
+            document.getElementById('old').value = doc.querySelector('div[style*="text-decoration:line-through"]')?.innerText || "";
+            document.getElementById('new').value = doc.querySelector('div[style*="font-size:36px"]')?.innerText || "";
+            document.getElementById('link').value = doc.querySelector('a')?.getAttribute('href') || "";
+            let [intro, line] = (doc.querySelector('p[style*="font-size:14px"]')?.innerHTML || "").split('<br>');
+            document.getElementById('intro').value = (intro || "").trim();
+            document.getElementById('line').value = (line || "").trim();
+            updateCurrentLangData();
+            isSilent = false;
+            saveState();
+            generate();
+        } catch (e) { isSilent = false; alert("Ошибка импорта"); }
+    }
 
-window.onload = () => {
-    saveState();
-    generate();
-};
+    function updateFieldsFromLang() {
+        const lang = document.getElementById('lang').value;
+        document.getElementById('intro').value = langData[lang].i;
+        document.getElementById('line').value = langData[lang].l;
+    }
+
+    function updateCurrentLangData() {
+        const lang = document.getElementById('lang').value;
+        langData[lang].i = document.getElementById('intro').value;
+        langData[lang].l = document.getElementById('line').value;
+    }
+
+    function generate(noHistory = false) {
+        const lang = document.getElementById('lang').value;
+        const conf = langConfigs[lang];
+        let res = baseTemplate
+            .replaceAll("[IMG LINK]", document.getElementById('img').value || "https://via.placeholder.com/400x200/e32d37/FFFFFF?text=OlyBoost")
+            .replaceAll("[INTRO TEXT]", document.getElementById('intro').value.replace(/\n/g, '<br>'))
+            .replaceAll("[LINE]", document.getElementById('line').value)
+            .replaceAll("[OLD ODDS]", document.getElementById('old').value || "0.00")
+            .replaceAll("[NEW ODDS]", document.getElementById('new').value || "0.00")
+            .replaceAll("[LINK]", document.getElementById('link').value || "#")
+            .replaceAll("[WAS_LABEL]", conf.was)
+            .replaceAll("[NOW_LABEL]", conf.now)
+            .replaceAll("[FOOTER_TEXT]", conf.footer)
+            .replaceAll("[CTA_TEXT]", conf.cta);
+
+        document.getElementById('output').value = res;
+        document.getElementById('preview').innerHTML = res;
+        if(!noHistory && !isSilent) saveState();
+    }
+
+    function saveState() {
+        const state = JSON.stringify({ d: langData, img: document.getElementById('img').value, old: document.getElementById('old').value, new: document.getElementById('new').value, link: document.getElementById('link').value, l: document.getElementById('lang').value });
+        if (historyStack[historyStack.length - 1] !== state) historyStack.push(state);
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.code === 'KeyZ') {
+            e.preventDefault();
+            if (historyStack.length > 1) {
+                historyStack.pop();
+                const last = JSON.parse(historyStack[historyStack.length - 1]);
+                langData = last.d;
+                document.getElementById('img').value = last.img;
+                document.getElementById('old').value = last.old;
+                document.getElementById('new').value = last.new;
+                document.getElementById('link').value = last.link;
+                document.getElementById('lang').value = last.l;
+                updateFieldsFromLang();
+                generate(true);
+            }
+        }
+        if ((e.ctrlKey || e.metaKey) && e.code === 'KeyB' && document.activeElement.id === 'intro') {
+            e.preventDefault();
+            const el = document.getElementById('intro');
+            const s = el.selectionStart, end = el.selectionEnd;
+            el.value = el.value.substring(0, s) + '<strong>' + el.value.substring(s, end) + '</strong>' + el.value.substring(end);
+            updateCurrentLangData();
+            generate();
+        }
+    });
+
+    function copyCode() {
+        const out = document.getElementById('output');
+        out.select();
+        document.execCommand('copy');
+        alert("Успешно скопировано!");
+    }
+
+    window.onload = () => { updateFieldsFromLang(); generate(); };
 </script>
 </body>
 </html>
